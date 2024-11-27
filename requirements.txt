@@ -1,0 +1,20 @@
+ psutil
+ pySMART
+ py-cpuinfo
+ wmi; platform_system == "Windows"
+ GPUtil
+ pyserial
+ dash
+ dash-bootstrap-components
+ Flask
+ SQLAlchemy
+ Flask-Bcrypt
+ Flask-JWT-Extended
+ scikit-learn
+ pandas
+ numpy
+ joblib
+ shap
+ PyQt5
+ boto3
+ cryptography

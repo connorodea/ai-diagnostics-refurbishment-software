@@ -1,0 +1,1974 @@
+# feedback.py
+
+from flask import Flask, request, jsonify
+import logging
+
+app = Flask(__name__)
+
+# Configure logging
+logging.basicConfig(filename='feedback.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+@app.route('/submit_feedback', methods=['POST'])
+def submit_feedback():
+    data = request.get_json()
+    try:
+        with open('feedback_data.json', 'a') as f:
+            f.write(json.dumps(data) + "\n")
+        logging.info(f"Feedback received: {data}")
+        return jsonify({"msg": "Feedback submitted successfully."}), 200
+    except Exception as e:
+        logging.error(f"Feedback Submission Error: {e}")
+        return jsonify({"msg": "Failed to submit feedback."}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5002)
+
+
+# alert_rules.yml
+
+groups:
+  - name: example
+    rules:
+      - alert: HighCPUUsage
+        expr: process_cpu_seconds_total > 80
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage has been above 80% for more than 5 minutes."
+
+
+# alertmanager.yml
+
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: 'slack-notifications'
+
+receivers:
+  - name: 'slack-notifications'
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+        channel: '#alerts'
+
+
+# prometheus.yml
+
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'flask_app'
+    static_configs:
+      - targets: ['localhost:5000']
+
+
+# logstash.conf
+
+input {
+  file {
+    path => "/path/to/your/logs/*.log"
+    start_position => "beginning"
+  }
+}
+
+filter {
+  json {
+    source => "message"
+  }
+}
+
+output {
+  elasticsearch {
+    hosts => ["localhost:9200"]
+    index => "diagnostic_logs"
+  }
+  stdout { codec => rubydebug }
+}
+
+
+# environmental_impact.py
+
+import json
+import logging
+import matplotlib.pyplot as plt
+
+# Configure logging
+logging.basicConfig(filename='environmental_impact.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+def calculate_impact(e_waste_data):
+    try:
+        total_e_waste = sum(item['weight'] for item in e_waste_data)
+        metals_recycled = sum(item['metals_recycled'] for item in e_waste_data)
+        energy_saved = sum(item['energy_saved'] for item in e_waste_data)
+        carbon_reduction = sum(item['carbon_reduction'] for item in e_waste_data)
+        
+        impact = {
+            "Total E-Waste Processed (kg)": total_e_waste,
+            "Total Metals Recycled (kg)": metals_recycled,
+            "Total Energy Saved (kWh)": energy_saved,
+            "Total Carbon Reduction (kg CO2)": carbon_reduction
+        }
+        logging.info("Environmental impact calculated successfully.")
+        return impact
+    except Exception as e:
+        logging.error(f"Impact Calculation Error: {e}")
+        return {"Error": str(e)}
+
+def generate_impact_report(impact, filename="environmental_impact_report.json"):
+    try:
+        with open(filename, "w") as file:
+            json.dump(impact, file, indent=4)
+        logging.info(f"Environmental impact report generated: {filename}")
+    except Exception as e:
+        logging.error(f"Report Generation Error: {e}")
+
+def visualize_impact(impact):
+    try:
+        labels = list(impact.keys())
+        values = list(impact.values())
+        plt.figure(figsize=(10, 6))
+        plt.bar(labels, values, color='green')
+        plt.xlabel('Metrics')
+        plt.ylabel('Values')
+        plt.title('Environmental Impact Metrics')
+        plt.savefig('environmental_impact.png')
+        logging.info("Environmental impact visualization created.")
+    except Exception as e:
+        logging.error(f"Visualization Error: {e}")
+
+if __name__ == "__main__":
+    sample_e_waste_data = [
+        {"weight": 500, "metals_recycled": 200, "energy_saved": 1500, "carbon_reduction": 3000},
+        {"weight": 300, "metals_recycled": 120, "energy_saved": 900, "carbon_reduction": 1800},
+        # Add more data as needed
+    ]
+    impact = calculate_impact(sample_e_waste_data)
+    generate_impact_report(impact)
+    visualize_impact(impact)
+
+# environmental_impact.py
+
+import json
+import logging
+import matplotlib.pyplot as plt
+
+# Configure logging
+logging.basicConfig(filename='environmental_impact.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+def calculate_impact(e_waste_data):
+    try:
+        total_e_waste = sum(item['weight'] for item in e_waste_data)
+        metals_recycled = sum(item['metals_recycled'] for item in e_waste_data)
+        energy_saved = sum(item['energy_saved'] for item in e_waste_data)
+        carbon_reduction = sum(item['carbon_reduction'] for item in e_waste_data)
+        
+        impact = {
+            "Total E-Waste Processed (kg)": total_e_waste,
+            "Total Metals Recycled (kg)": metals_recycled,
+            "Total Energy Saved (kWh)": energy_saved,
+            "Total Carbon Reduction (kg CO2)": carbon_reduction
+        }
+        logging.info("Environmental impact calculated successfully.")
+        return impact
+    except Exception as e:
+        logging.error(f"Impact Calculation Error: {e}")
+        return {"Error": str(e)}
+
+def generate_impact_report(impact, filename="environmental_impact_report.json"):
+    try:
+        with open(filename, "w") as file:
+            json.dump(impact, file, indent=4)
+        logging.info(f"Environmental impact report generated: {filename}")
+    except Exception as e:
+        logging.error(f"Report Generation Error: {e}")
+
+def visualize_impact(impact):
+    try:
+        labels = list(impact.keys())
+        values = list(impact.values())
+        plt.figure(figsize=(10, 6))
+        plt.bar(labels, values, color='green')
+        plt.xlabel('Metrics')
+        plt.ylabel('Values')
+        plt.title('Environmental Impact Metrics')
+        plt.savefig('environmental_impact.png')
+        logging.info("Environmental impact visualization created.")
+    except Exception as e:
+        logging.error(f"Visualization Error: {e}")
+
+if __name__ == "__main__":
+    sample_e_waste_data = [
+        {"weight": 500, "metals_recycled": 200, "energy_saved": 1500, "carbon_reduction": 3000},
+        {"weight": 300, "metals_recycled": 120, "energy_saved": 900, "carbon_reduction": 1800},
+        # Add more data as needed
+    ]
+    impact = calculate_impact(sample_e_waste_data)
+    generate_impact_report(impact)
+    visualize_impact(impact)
+
+# accounting_integration.py
+
+from intuitlib.client import AuthClient
+from quickbooks import QuickBooks
+from quickbooks.objects.invoice import Invoice, Line, SalesItemLineDetail
+import logging
+
+# Configure logging
+logging.basicConfig(filename='accounting_integration.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+auth_client = AuthClient(
+    client_id='your_client_id',
+    client_secret='your_client_secret',
+    environment='sandbox',
+    redirect_uri='your_redirect_uri'
+)
+
+qb_client = QuickBooks(
+    auth_client=auth_client,
+    refresh_token='your_refresh_token',
+    company_id='your_company_id',
+    minorversion=14
+)
+
+def create_invoice(customer_id, item_id, quantity, unit_price):
+    try:
+        invoice = Invoice()
+        invoice.CustomerRef = {"value": customer_id}
+        
+        line = Line()
+        line.Amount = quantity * unit_price
+        line.DetailType = "SalesItemLineDetail"
+        line.SalesItemLineDetail = SalesItemLineDetail()
+        line.SalesItemLineDetail.ItemRef = {"value": item_id}
+        line.SalesItemLineDetail.UnitPrice = unit_price
+        line.SalesItemLineDetail.Qty = quantity
+        
+        invoice.Line.append(line)
+        invoice.save(qb=qb_client)
+        logging.info(f"Invoice created for customer {customer_id}")
+    except Exception as e:
+        logging.error(f"Invoice Creation Error: {e}")
+
+if __name__ == "__main__":
+    create_invoice(customer_id='123', item_id='456', quantity=2, unit_price=150.00)
+
+# accounting_integration.py
+
+from intuitlib.client import AuthClient
+from quickbooks import QuickBooks
+from quickbooks.objects.invoice import Invoice, Line, SalesItemLineDetail
+import logging
+
+# Configure logging
+logging.basicConfig(filename='accounting_integration.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+auth_client = AuthClient(
+    client_id='your_client_id',
+    client_secret='your_client_secret',
+    environment='sandbox',
+    redirect_uri='your_redirect_uri'
+)
+
+qb_client = QuickBooks(
+    auth_client=auth_client,
+    refresh_token='your_refresh_token',
+    company_id='your_company_id',
+    minorversion=14
+)
+
+def create_invoice(customer_id, item_id, quantity, unit_price):
+    try:
+        invoice = Invoice()
+        invoice.CustomerRef = {"value": customer_id}
+        
+        line = Line()
+        line.Amount = quantity * unit_price
+        line.DetailType = "SalesItemLineDetail"
+        line.SalesItemLineDetail = SalesItemLineDetail()
+        line.SalesItemLineDetail.ItemRef = {"value": item_id}
+        line.SalesItemLineDetail.UnitPrice = unit_price
+        line.SalesItemLineDetail.Qty = quantity
+        
+        invoice.Line.append(line)
+        invoice.save(qb=qb_client)
+        logging.info(f"Invoice created for customer {customer_id}")
+    except Exception as e:
+        logging.error(f"Invoice Creation Error: {e}")
+
+if __name__ == "__main__":
+    create_invoice(customer_id='123', item_id='456', quantity=2, unit_price=150.00)
+
+# crm_integration.py
+
+import requests
+import logging
+
+# Configure logging
+logging.basicConfig(filename='crm_integration.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+HUBSPOT_API_KEY = 'your_hubspot_api_key'
+
+def create_contact(email, first_name, last_name):
+    url = "https://api.hubapi.com/contacts/v1/contact"
+    headers = {"Content-Type": "application/json"}
+    params = {"hapikey": HUBSPOT_API_KEY}
+    data = {
+        "properties": [
+            {"property": "email", "value": email},
+            {"property": "firstname", "value": first_name},
+            {"property": "lastname", "value": last_name}
+        ]
+    }
+    response = requests.post(url, json=data, headers=headers, params=params)
+    if response.status_code == 200:
+        logging.info(f"Contact created: {email}")
+    else:
+        logging.error(f"Failed to create contact: {response.text}")
+
+if __name__ == "__main__":
+    create_contact("john.doe@example.com", "John", "Doe")
+
+
+# multi_tenancy.py
+
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
+import logging
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user:password@localhost/dbname'
+app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'
+db = SQLAlchemy(app)
+jwt = JWTManager(app)
+
+class Tenant(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+    # Additional tenant-specific fields
+
+class DiagnosticReport(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenant.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False)
+    report_data = db.Column(db.JSON, nullable=False)
+    # Additional fields
+
+@app.route('/submit_report', methods=['POST'])
+@jwt_required()
+def submit_report():
+    current_user = get_jwt_identity()
+    # Fetch tenant based on user
+    tenant = Tenant.query.filter_by(name=current_user).first()
+    if not tenant:
+        return jsonify({"msg": "Tenant not found"}), 404
+    data = request.get_json()
+    new_report = DiagnosticReport(
+        tenant_id=tenant.id,
+        timestamp=data['timestamp'],
+        report_data=data['report_data']
+    )
+    db.session.add(new_report)
+    db.session.commit()
+    return jsonify({"msg": "Report submitted"}), 201
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+# model_serving.py
+
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import joblib
+import numpy as np
+
+app = FastAPI()
+
+class PredictionRequest(BaseModel):
+    cpu_usage: float
+    memory_usage: float
+    disk_health: float
+    gpu_temp: float
+    battery_health: float
+
+# Load the model and scaler at startup
+model = joblib.load('optimized_failure_predictor.pkl')
+scaler = joblib.load('scaler.pkl')
+
+@app.post("/predict")
+def predict(request: PredictionRequest):
+    try:
+        input_data = np.array([[request.cpu_usage, request.memory_usage, request.disk_health, request.gpu_temp, request.battery_health]])
+        input_scaled = scaler.transform(input_data)
+        prediction = model.predict(input_scaled)
+        probability = model.predict_proba(input_scaled)
+        result = {
+            "Prediction": "Failure Detected" if prediction[0] == 1 else "Healthy",
+            "Confidence": round(max(probability[0]) * 100, 2)
+        }
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# To run the server:
+# uvicorn model_serving:app --host 0.0.0.0 --port 8000
+
+-- PostgreSQL example
+
+CREATE TABLE diagnostic_reports (
+    id SERIAL PRIMARY KEY,
+    timestamp TIMESTAMP NOT NULL,
+    cpu_usage JSONB,
+    memory_usage JSONB,
+    storage_info JSONB,
+    gpu_info JSONB,
+    battery_info JSONB,
+    power_supply_info JSONB,
+    ai_prediction JSONB
+);
+
+# accessible_gui.py
+
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QTextEdit, QLabel
+from PyQt5.QtCore import Qt
+import sys
+
+class AccessibleApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle('Accessible Diagnostic Tool')
+        self.setGeometry(100, 100, 800, 600)
+
+        layout = QVBoxLayout()
+
+        self.status_label = QLabel('Status: Ready')
+        self.status_label.setAccessibleName('Status Label')
+        layout.addWidget(self.status_label)
+
+        self.run_button = QPushButton('Run Diagnostics')
+        self.run_button.setAccessibleName('Run Diagnostics Button')
+        layout.addWidget(self.run_button)
+
+        self.report_area = QTextEdit()
+        self.report_area.setReadOnly(True)
+        self.report_area.setAccessibleName('Report Area')
+        layout.addWidget(self.report_area)
+
+        self.setLayout(layout)
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    accessible_app = AccessibleApp()
+    accessible_app.show()
+    sys.exit(app.exec_())
+
+# localization.py
+
+import gettext
+import os
+
+localedir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'locales')
+lang = gettext.translation('base', localedir, languages=['es'], fallback=True)
+lang.install()
+_ = lang.gettext
+
+print(_("Welcome to the Diagnostic Tool"))
+
+# tasks.py
+
+from celery import Celery
+from workflow import execute_workflow
+
+app = Celery('tasks', broker='redis://localhost:6379/0')
+
+@app.task
+def run_diagnostics_task():
+    report = execute_workflow()
+    return report
+
+# .github/workflows/ci-cd.yml
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Unit Tests
+      run: |
+        python -m unittest discover -s tests
+
+    - name: Build Executable
+      run: |
+        pip install pyinstaller
+        pyinstaller --onefile --windowed gui.py
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: executable
+        path: dist/gui
+
+# report_generation.py
+
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+import json
+import logging
+
+# Configure logging
+logging.basicConfig(filename='report_generation.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+def generate_pdf_report(report, filename="diagnostic_report.pdf"):
+    try:
+        c = canvas.Canvas(filename, pagesize=letter)
+        width, height = letter
+        c.setFont("Helvetica", 12)
+        y = height - 50
+        c.drawString(50, y, f"Diagnostic Report - {report['Timestamp']}")
+        y -= 30
+        for section, details in report['Diagnostics'].items():
+            c.drawString(50, y, f"{section}:")
+            y -= 20
+            for key, value in details.items():
+                c.drawString(70, y, f"{key}: {value}")
+                y -= 15
+            y -= 10
+        c.drawString(50, y, f"AI Prediction: {report['AI Prediction']['Prediction']} with confidence {report['AI Prediction']['Confidence']}%")
+        c.save()
+        logging.info(f"PDF report generated: {filename}")
+    except Exception as e:
+        logging.error(f"PDF Report Generation Error: {e}")
+
+if __name__ == "__main__":
+    sample_report = {
+        "Timestamp": "2024-04-27 14:30:45",
+        "Diagnostics": {
+            "CPU": {"CPU Usage (%)": [45.0, 50.0, 55.0], "CPU Frequency (MHz)": {"current": 2400, "min": 800, "max": 2400}, "CPU Temperature (°C)": 65.0},
+            "Memory": {"Total Memory (GB)": 16.0, "Available Memory (GB)": 8.0, "Memory Usage (%)": 50.0},
+            # Additional sections...
+        },
+        "AI Prediction": {"Prediction": "Healthy", "Confidence": 95.0}
+    }
+    generate_pdf_report(sample_report)
+
+# data_retention.py
+
+import os
+import time
+import logging
+
+# Configure logging
+logging.basicConfig(filename='data_retention.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+def clean_old_reports(directory, retention_days=365):
+    current_time = time.time()
+    for filename in os.listdir(directory):
+        file_path = os.path.join(directory, filename)
+        if os.path.isfile(file_path):
+            file_age = current_time - os.path.getmtime(file_path)
+            if file_age > retention_days * 86400:
+                try:
+                    os.remove(file_path)
+                    logging.info(f"Deleted old report: {file_path}")
+                except Exception as e:
+                    logging.error(f"Error deleting {file_path}: {e}")
+
+if __name__ == "__main__":
+    clean_old_reports('/path/to/reports', retention_days=365)
+
+# async_diagnostics.py
+
+import asyncio
+from diagnostics import CPUDiagnostics, RAMDiagnostics, StorageDiagnostics, GPUDiagnostics, BatteryDiagnostics, PowerSupplyDiagnostics
+
+async def run_cpu():
+    cpu = CPUDiagnostics()
+    return cpu.get_cpu_info()
+
+async def run_ram():
+    ram = RAMDiagnostics()
+    return ram.get_memory_info()
+
+async def run_storage():
+    storage = StorageDiagnostics()
+    return storage.get_storage_info()
+
+async def run_gpu():
+    gpu = GPUDiagnostics()
+    return gpu.get_gpu_info()
+
+async def run_battery():
+    battery = BatteryDiagnostics()
+    return battery.get_battery_info()
+
+async def run_power_supply():
+    power = PowerSupplyDiagnostics()
+    return power.get_power_supply_info()
+
+async def run_all():
+    results = await asyncio.gather(
+        run_cpu(),
+        run_ram(),
+        run_storage(),
+        run_gpu(),
+        run_battery(),
+        run_power_supply(),
+        return_exceptions=True
+    )
+    diagnostics = {
+        "CPU": results[0],
+        "Memory": results[1],
+        "Storage": results[2],
+        "GPU": results[3],
+        "Battery": results[4],
+        "Power Supply": results[5]
+    }
+    return diagnostics
+
+if __name__ == "__main__":
+    diagnostics = asyncio.run(run_all())
+    print(diagnostics)
+
+# backup.py
+
+import boto3
+import os
+import datetime
+import logging
+
+# Configure logging
+logging.basicConfig(filename='backup.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+def backup_database():
+    try:
+        # Assuming PostgreSQL
+        os.system("pg_dump -U your_username -h localhost your_dbname > backup.sql")
+        logging.info("Database backup created successfully.")
+    except Exception as e:
+        logging.error(f"Database Backup Error: {e}")
+
+def upload_backup_to_s3(file_name, bucket):
+    s3_client = boto3.client('s3')
+    try:
+        s3_client.upload_file(file_name, bucket, file_name)
+        logging.info(f"Backup {file_name} uploaded to {bucket}")
+    except Exception as e:
+        logging.error(f"S3 Upload Error: {e}")
+
+if __name__ == "__main__":
+    backup_database()
+    backup_file = f"backup_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.sql"
+    os.rename("backup.sql", backup_file)
+    upload_backup_to_s3(backup_file, 'your-s3-bucket-name')
+
+# api.py
+
+from flask import Flask, jsonify, request
+from workflow import execute_workflow
+from ai_module import predict_failure
+import logging
+
+app = Flask(__name__)
+
+# Configure logging
+logging.basicConfig(filename='api.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+@app.route('/run_diagnostics', methods=['POST'])
+def run_diagnostics_api():
+    try:
+        report = execute_workflow()
+        return jsonify(report), 200
+    except Exception as e:
+        logging.error(f"API Diagnostics Error: {e}")
+        return jsonify({"Error": str(e)}), 500
+
+@app.route('/get_report/<report_id>', methods=['GET'])
+def get_report(report_id):
+    # Implement logic to retrieve report by ID from the database or storage
+    # Placeholder response
+    return jsonify({"report_id": report_id, "data": "Report data here"}), 200
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5001)
+
+# cloud_storage.py
+
+import boto3
+from botocore.exceptions import NoCredentialsError
+import logging
+
+# Configure logging
+logging.basicConfig(filename='cloud_storage.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+def upload_to_s3(file_name, bucket, object_name=None):
+    s3_client = boto3.client('s3')
+    try:
+        s3_client.upload_file(file_name, bucket, object_name or file_name)
+        logging.info(f"File {file_name} uploaded to {bucket} as {object_name or file_name}")
+    except FileNotFoundError:
+        logging.error(f"The file {file_name} was not found.")
+    except NoCredentialsError:
+        logging.error("Credentials not available.")
+
+if __name__ == "__main__":
+    upload_to_s3('diagnostic_report.json', 'your-s3-bucket-name')
+
+# auth_rbac.py
+
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from functools import wraps
+import logging
+
+# Configure logging
+logging.basicConfig(filename='auth_rbac.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user:password@localhost/dbname'
+app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'
+db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
+jwt = JWTManager(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+    role = db.Column(db.String(50), nullable=False)  # e.g., Admin, Technician
+
+def role_required(required_role):
+    def decorator(fn):
+        @wraps(fn)
+        @jwt_required()
+        def wrapper(*args, **kwargs):
+            current_user = get_jwt_identity()
+            user = User.query.filter_by(username=current_user).first()
+            if user and user.role == required_role:
+                return fn(*args, **kwargs)
+            else:
+                return jsonify({"msg": "Access denied"}), 403
+        return wrapper
+    return decorator
+
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    hashed_password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
+    new_user = User(username=data['username'], password=hashed_password, role=data['role'])
+    db.session.add(new_user)
+    db.session.commit()
+    logging.info(f"User registered: {data['username']} with role {data['role']}")
+    return jsonify({"msg": "User created"}), 201
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    user = User.query.filter_by(username=data['username']).first()
+    if user and bcrypt.check_password_hash(user.password, data['password']):
+        access_token = create_access_token(identity=user.username)
+        logging.info(f"User logged in: {user.username}")
+        return jsonify(access_token=access_token), 200
+    else:
+        logging.warning(f"Failed login attempt for user: {data['username']}")
+        return jsonify({"msg": "Bad credentials"}), 401
+
+@app.route('/admin', methods=['GET'])
+@role_required('Admin')
+def admin_route():
+    return jsonify({"msg": "Welcome Admin"}), 200
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+# inventory_integration.py
+
+from sqlalchemy import create_engine, Column, Integer, String, Float
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+import logging
+
+# Configure logging
+logging.basicConfig(filename='inventory_integration.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+Base = declarative_base()
+
+class Part(Base):
+    __tablename__ = 'parts'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    quantity = Column(Integer)
+    cost = Column(Float)
+
+def update_inventory(part_name, quantity_used):
+    try:
+        engine = create_engine('postgresql://user:password@localhost/dbname')
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        part = session.query(Part).filter_by(name=part_name).first()
+        if part and part.quantity >= quantity_used:
+            part.quantity -= quantity_used
+            session.commit()
+            logging.info(f"Updated inventory for {part_name}: -{quantity_used}")
+        else:
+            logging.warning(f"Insufficient inventory for {part_name}")
+        session.close()
+    except Exception as e:
+        logging.error(f"Inventory Update Error: {e}")
+
+if __name__ == "__main__":
+    update_inventory('RAM Module', 2)
+
+# model_explainability.py
+
+import joblib
+import shap
+import pandas as pd
+import matplotlib.pyplot as plt
+import logging
+
+# Configure logging
+logging.basicConfig(filename='model_explainability.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+def explain_model():
+    try:
+        model = joblib.load('optimized_failure_predictor.pkl')
+        scaler = joblib.load('scaler.pkl')
+        data = pd.read_csv('diagnostic_data.csv').dropna()
+        X = data[['Average_CPU_Usage', 'memory_usage', 'disk_health', 'gpu_temp', 'battery_health']]
+        X_scaled = scaler.transform(X)
+
+        explainer = shap.TreeExplainer(model)
+        shap_values = explainer.shap_values(X_scaled)
+
+        # Summary Plot
+        shap.summary_plot(shap_values, X, plot_type="bar")
+        plt.savefig('shap_summary_plot.png')
+        logging.info("SHAP summary plot generated and saved.")
+
+        # Force Plot for the first prediction
+        shap.force_plot(explainer.expected_value[1], shap_values[1][0], X.iloc[0], matplotlib=True)
+        plt.savefig('shap_force_plot.png')
+        logging.info("SHAP force plot generated and saved.")
+    except Exception as e:
+        logging.error(f"Model Explainability Error: {e}")
+
+if __name__ == "__main__":
+    explain_model()
+
+# model_optimization.py
+
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
+import joblib
+import logging
+
+# Configure logging
+logging.basicConfig(filename='model_optimization.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+def optimize_model(X_train, y_train):
+    try:
+        param_grid = {
+            'n_estimators': [100, 200, 300],
+            'max_depth': [10, 20, None],
+            'min_samples_split': [2, 5, 10]
+        }
+        rf = RandomForestClassifier(random_state=42)
+        grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=5, n_jobs=-1, scoring='accuracy')
+        grid_search.fit(X_train, y_train)
+        logging.info(f"Best Parameters: {grid_search.best_params_}")
+        logging.info(f"Best Score: {grid_search.best_score_}")
+        return grid_search.best_estimator_
+    except Exception as e:
+        logging.error(f"Model Optimization Error: {e}")
+        return None
+
+if __name__ == "__main__":
+    from ai_module import load_data, preprocess_data, train_model
+    data = load_data('diagnostic_data.csv')
+    if data is not None:
+        X, y = preprocess_data(data)
+        if X is not None and y is not None:
+            optimized_model = optimize_model(X, y)
+            if optimized_model:
+                joblib.dump(optimized_model, 'optimized_failure_predictor.pkl')
+                logging.info("Optimized model saved successfully.")
+
+# real_time_dashboard.py
+
+import dash
+from dash import html, dcc
+import dash_bootstrap_components as dbc
+from dash.dependencies import Input, Output
+import plotly.graph_objs as go
+from workflow import run_all_diagnostics, predict_failure, generate_report, save_report, log_diagnostics, notify_technician
+import json
+
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+
+app.layout = dbc.Container([
+    dbc.Row([
+        dbc.Col(html.H1("Real-Time Diagnostics Dashboard"), className="mb-4")
+    ]),
+    dbc.Row([
+        dbc.Col(dbc.Button("Run Diagnostics", id="run-button", color="primary"), width=12)
+    ], className="mb-4"),
+    dbc.Row([
+        dbc.Col(dcc.Graph(id='cpu-usage'), width=6),
+        dbc.Col(dcc.Graph(id='memory-usage'), width=6)
+    ]),
+    dbc.Row([
+        dbc.Col(dcc.Graph(id='disk-usage'), width=6),
+        dbc.Col(dcc.Graph(id='gpu-temp'), width=6)
+    ]),
+    dbc.Row([
+        dbc.Col(dcc.Graph(id='battery-health'), width=6),
+        dbc.Col(dcc.Graph(id='power-supply'), width=6)
+    ]),
+    dcc.Interval(
+        id='interval-component',
+        interval=60*1000,  # 1 minute
+        n_intervals=0
+    )
+], fluid=True)
+
+@app.callback(
+    [
+        Output('cpu-usage', 'figure'),
+        Output('memory-usage', 'figure'),
+        Output('disk-usage', 'figure'),
+        Output('gpu-temp', 'figure'),
+        Output('battery-health', 'figure'),
+        Output('power-supply', 'figure')
+    ],
+    [Input('interval-component', 'n_intervals')]
+)
+def update_graphs(n):
+    diagnostics = run_all_diagnostics()
+    cpu = diagnostics['CPU']['CPU Usage (%)']
+    memory = diagnostics['Memory']['Memory Usage (%)']
+    # Example: Extract disk read count
+    disk_io = diagnostics['Storage']['IO Statistics']
+    disk_read = disk_io['sda']['read_count'] if 'sda' in disk_io else 0
+    gpu_temp = diagnostics['GPU']['0']['Temperature (°C)'] if '0' in diagnostics['GPU'] else 0
+    battery = diagnostics['Battery']['Battery Health (%)'] if 'Battery Health (%)' in diagnostics['Battery'] else 100
+    power = diagnostics['Power Supply']['Power Supply Voltage (V)'] if 'Power Supply Voltage (V)' in diagnostics['Power Supply'] else 0
+
+    cpu_fig = {
+        'data': [go.Scatter(x=list(range(len(cpu))), y=cpu, mode='lines', name='CPU Usage')],
+        'layout': go.Layout(title='CPU Usage (%)', xaxis={'title': 'Time'}, yaxis={'title': 'Usage (%)'})
+    }
+    memory_fig = {
+        'data': [go.Scatter(x=list(range(len(memory))), y=memory, mode='lines', name='Memory Usage')],
+        'layout': go.Layout(title='Memory Usage (%)', xaxis={'title': 'Time'}, yaxis={'title': 'Usage (%)'})
+    }
+    disk_fig = {
+        'data': [go.Bar(x=['Read Count'], y=[disk_read], name='Disk Read Count')],
+        'layout': go.Layout(title='Disk Read Count')
+    }
+    gpu_fig = {
+        'data': [go.Bar(x=['GPU Temperature'], y=[gpu_temp], name='GPU Temp')],
+        'layout': go.Layout(title='GPU Temperature (°C)')
+    }
+    battery_fig = {
+        'data': [go.Pie(labels=['Healthy', 'Needs Replacement'], values=[battery, 100 - battery], hole=.3)],
+        'layout': go.Layout(title='Battery Health (%)')
+    }
+    power_fig = {
+        'data': [go.Bar(x=['Voltage'], y=[power], name='Power Supply Voltage')],
+        'layout': go.Layout(title='Power Supply Voltage (V)')
+    }
+
+    return cpu_fig, memory_fig, disk_fig, gpu_fig, battery_fig, power_fig
+
+@app.callback(
+    Output("report-output", "children"),
+    [Input("run-button", "n_clicks")]
+)
+def run_diagnostics(n_clicks):
+    if n_clicks:
+        report = execute_workflow()
+        if "Error" not in report:
+            return html.Pre(json.dumps(report, indent=4))
+        else:
+            return html.Pre(json.dumps(report, indent=4))
+    return ""
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
+
+# test_integration.py
+
+import unittest
+from workflow import execute_workflow
+
+class TestWorkflow(unittest.TestCase):
+
+    def test_full_diagnostics_workflow(self):
+        report = execute_workflow()
+        self.assertIn("Timestamp", report)
+        self.assertIn("Diagnostics", report)
+        self.assertIn("AI Prediction", report)
+        self.assertIn("CPU", report["Diagnostics"])
+        self.assertIn("Memory", report["Diagnostics"])
+        self.assertIn("Storage", report["Diagnostics"])
+
+if __name__ == '__main__':
+    unittest.main()
+
+# test_diagnostics.py
+
+import unittest
+from diagnostics import CPUDiagnostics, RAMDiagnostics, StorageDiagnostics, GPUDiagnostics, BatteryDiagnostics, PowerSupplyDiagnostics
+
+class TestDiagnostics(unittest.TestCase):
+
+    def setUp(self):
+        self.cpu = CPUDiagnostics()
+        self.ram = RAMDiagnostics()
+        self.storage = StorageDiagnostics()
+        self.gpu = GPUDiagnostics()
+        self.battery = BatteryDiagnostics()
+        self.power = PowerSupplyDiagnostics()
+
+    def test_cpu_info(self):
+        cpu_info = self.cpu.get_cpu_info()
+        self.assertIn("CPU Usage (%)", cpu_info)
+        self.assertIn("CPU Frequency (MHz)", cpu_info)
+        self.assertIn("CPU Temperature (°C)", cpu_info)
+
+    def test_memory_info(self):
+        memory_info = self.ram.get_memory_info()
+        self.assertIn("Total Memory (GB)", memory_info)
+        self.assertIn("Available Memory (GB)", memory_info)
+        self.assertIn("Memory Usage (%)", memory_info)
+
+    def test_storage_info(self):
+        storage_info = self.storage.get_storage_info()
+        self.assertIn("SMART", storage_info)
+
+    def test_gpu_info(self):
+        gpu_info = self.gpu.get_gpu_info()
+        # Depending on system, GPU info may or may not be available
+        # So, check if it's either a dictionary or an error message
+        self.assertTrue(isinstance(gpu_info, dict) or "Error" in gpu_info)
+
+    def test_battery_info(self):
+        battery_info = self.battery.get_battery_info()
+        # Battery info might not be available on desktops
+        self.assertTrue(isinstance(battery_info, dict))
+
+    def test_power_supply_info(self):
+        power_info = self.power.get_power_supply_info()
+        self.assertIn("Power Supply Voltage (V)", power_info)
+
+if __name__ == '__main__':
+    unittest.main()
+
+pip install pyinstaller
+pyinstaller --onefile --windowed gui.py  # For desktop GUI
+pyinstaller --onefile --windowed web_interface.py  # For web interface
+
+# secure_flask_app.py
+
+from flask import Flask
+import ssl
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Secure Flask App"
+
+if __name__ == '__main__':
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+    context.load_cert_chain('cert.pem', 'key.pem')  # Replace with your cert and key files
+    app.run(host='0.0.0.0', port=443, ssl_context=context)
+
+# auth.py
+
+from flask import Flask, request, jsonify
+from functools import wraps
+import jwt
+import datetime
+import logging
+
+# Configure logging
+logging.basicConfig(filename='auth.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'your_secret_key_here'  # Replace with a secure key
+
+# Mock user database
+users = {
+    "admin": "password123",  # Replace with hashed passwords in production
+}
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        # JWT is passed in the request header
+        if 'x-access-token' in request.headers:
+            token = request.headers['x-access-token']
+        if not token:
+            return jsonify({'message': 'Token is missing!'}), 401
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            current_user = data['user']
+        except Exception as e:
+            logging.error(f"Token Decode Error: {e}")
+            return jsonify({'message': 'Token is invalid!'}), 401
+        return f(current_user, *args, **kwargs)
+    return decorated
+
+@app.route('/login', methods=['POST'])
+def login():
+    auth = request.authorization
+    if not auth or not auth.username or not auth.password:
+        return jsonify({'message': 'Could not verify'}), 401
+    user = users.get(auth.username)
+    if not user or user != auth.password:
+        return jsonify({'message': 'Could not verify'}), 401
+    token = jwt.encode({'user': auth.username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)}, app.config['SECRET_KEY'], algorithm="HS256")
+    logging.info(f"User {auth.username} logged in.")
+    return jsonify({'token': token})
+
+@app.route('/protected', methods=['GET'])
+@token_required
+def protected(current_user):
+    return jsonify({'message': f'Hello, {current_user}! This is protected data.'})
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+# security.py
+
+from cryptography.fernet import Fernet
+import os
+import logging
+
+# Configure logging
+logging.basicConfig(filename='security.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+def generate_key():
+    key = Fernet.generate_key()
+    with open("secret.key", "wb") as key_file:
+        key_file.write(key)
+    logging.info("Encryption key generated and saved.")
+
+def load_key():
+    try:
+        return open("secret.key", "rb").read()
+    except Exception as e:
+        logging.error(f"Load Key Error: {e}")
+        return None
+
+def encrypt_data(data, key):
+    try:
+        f = Fernet(key)
+        encrypted = f.encrypt(data.encode())
+        logging.info("Data encrypted successfully.")
+        return encrypted
+    except Exception as e:
+        logging.error(f"Encrypt Data Error: {e}")
+        return None
+
+def decrypt_data(encrypted_data, key):
+    try:
+        f = Fernet(key)
+        decrypted = f.decrypt(encrypted_data).decode()
+        logging.info("Data decrypted successfully.")
+        return decrypted
+    except Exception as e:
+        logging.error(f"Decrypt Data Error: {e}")
+        return None
+
+if __name__ == "__main__":
+    # Example usage
+    if not os.path.exists("secret.key"):
+        generate_key()
+    key = load_key()
+    sample_data = "Sensitive Diagnostic Report Data"
+    encrypted = encrypt_data(sample_data, key)
+    print(f"Encrypted: {encrypted}")
+    decrypted = decrypt_data(encrypted, key)
+    print(f"Decrypted: {decrypted}")
+
+# oscilloscope_integration.py
+
+import pyvisa
+import logging
+
+# Configure logging
+logging.basicConfig(filename='oscilloscope_integration.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+class Oscilloscope:
+    def __init__(self, resource_name='TCPIP0::192.168.1.100::INSTR'):
+        self.rm = pyvisa.ResourceManager()
+        self.resource_name = resource_name
+        try:
+            self.oscilloscope = self.rm.open_resource(self.resource_name)
+            logging.info(f"Connected to Oscilloscope at {self.resource_name}")
+        except Exception as e:
+            logging.error(f"Oscilloscope Connection Error: {e}")
+            self.oscilloscope = None
+
+    def read_voltage(self, channel=1):
+        if self.oscilloscope:
+            try:
+                command = f"MEASure:VOLTage? CHANnel{channel}"
+                self.oscilloscope.write(command)
+                voltage = float(self.oscilloscope.read())
+                logging.info(f"Oscilloscope Voltage Read (Channel {channel}): {voltage} V")
+                return voltage
+            except Exception as e:
+                logging.error(f"Oscilloscope Read Voltage Error: {e}")
+                return "N/A"
+        else:
+            logging.error("Oscilloscope not connected.")
+            return "N/A"
+
+    def close_connection(self):
+        if self.oscilloscope:
+            self.oscilloscope.close()
+            logging.info("Oscilloscope connection closed.")
+
+if __name__ == "__main__":
+    osc = Oscilloscope(resource_name='TCPIP0::192.168.1.100::INSTR')
+    voltage = osc.read_voltage(channel=1)
+    print(f"Oscilloscope Voltage (Channel 1): {voltage} V")
+    osc.close_connection()
+
+# hardware_integration.py
+
+import serial
+import time
+import logging
+
+# Configure logging
+logging.basicConfig(filename='hardware_integration.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+class Multimeter:
+    def __init__(self, port='COM3', baudrate=9600, timeout=1):
+        self.port = port
+        self.baudrate = baudrate
+        self.timeout = timeout
+
+    def read_voltage(self):
+        try:
+            with serial.Serial(self.port, self.baudrate, timeout=self.timeout) as ser:
+                ser.write(b'READ_VOLTS\n')  # Command depends on your device's protocol
+                time.sleep(1)  # Wait for device to process
+                response = ser.readline().decode('utf-8').strip()
+                voltage = float(response)
+                logging.info(f"Voltage Read: {voltage} V")
+                return voltage
+        except Exception as e:
+            logging.error(f"Multimeter Read Voltage Error: {e}")
+            return "N/A"
+
+    def read_current(self):
+        try:
+            with serial.Serial(self.port, self.baudrate, timeout=self.timeout) as ser:
+                ser.write(b'READ_CURRENT\n')  # Command depends on your device's protocol
+                time.sleep(1)
+                response = ser.readline().decode('utf-8').strip()
+                current = float(response)
+                logging.info(f"Current Read: {current} A")
+                return current
+        except Exception as e:
+            logging.error(f"Multimeter Read Current Error: {e}")
+            return "N/A"
+
+if __name__ == "__main__":
+    mm = Multimeter(port='COM3', baudrate=9600)
+    voltage = mm.read_voltage()
+    current = mm.read_current()
+    print(f"Voltage: {voltage} V, Current: {current} A")
+
+# diagnostics.py
+
+import psutil
+import platform
+import wmi
+import random  # Placeholder for actual hardware data
+from pySMART import Smart
+import GPUtil
+import serial
+import logging
+
+# Configure logging
+logging.basicConfig(filename='diagnostic_logs.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+class CPUDiagnostics:
+    def __init__(self):
+        self.system = platform.system()
+
+    def get_cpu_info(self):
+        try:
+            cpu_usage = psutil.cpu_percent(interval=1, percpu=True)
+            cpu_freq = psutil.cpu_freq()._asdict()
+            cpu_temp = self.get_cpu_temperature()
+            load_avg = psutil.getloadavg() if hasattr(psutil, "getloadavg") else "N/A"
+            return {
+                "CPU Usage (%)": cpu_usage,
+                "CPU Frequency (MHz)": cpu_freq,
+                "CPU Temperature (°C)": cpu_temp,
+                "Load Average": load_avg
+            }
+        except Exception as e:
+            logging.error(f"CPU Diagnostics Error: {e}")
+            return {"Error": str(e)}
+
+    def get_cpu_temperature(self):
+        try:
+            if self.system == "Windows":
+                w = wmi.WMI(namespace="root\wmi")
+                temperature_info = w.MSAcpi_ThermalZoneTemperature()[0]
+                return (temperature_info.CurrentTemperature / 10.0) - 273.15
+            elif self.system == "Linux":
+                with open("/sys/class/thermal/thermal_zone0/temp", "r") as f:
+                    temp = float(f.read()) / 1000.0
+                    return temp
+            elif self.system == "Darwin":
+                # Implement macOS-specific temperature retrieval
+                return "N/A"
+            else:
+                return "N/A"
+        except Exception as e:
+            logging.error(f"CPU Temperature Retrieval Error: {e}")
+            return f"Error: {e}"
+
+class RAMDiagnostics:
+    def get_memory_info(self):
+        try:
+            memory = psutil.virtual_memory()
+            swap = psutil.swap_memory()
+            return {
+                "Total Memory (GB)": round(memory.total / (1024 ** 3), 2),
+                "Available Memory (GB)": round(memory.available / (1024 ** 3), 2),
+                "Memory Usage (%)": memory.percent,
+                "Total Swap (GB)": round(swap.total / (1024 ** 3), 2),
+                "Swap Usage (%)": swap.percent
+            }
+        except Exception as e:
+            logging.error(f"RAM Diagnostics Error: {e}")
+            return {"Error": str(e)}
+
+class StorageDiagnostics:
+    def get_storage_info(self):
+        try:
+            partitions = psutil.disk_partitions()
+            storage_info = {}
+            for partition in partitions:
+                try:
+                    usage = psutil.disk_usage(partition.mountpoint)._asdict()
+                    io = psutil.disk_io_counters(perdisk=True)
+                    disk_name = partition.device.split('/')[-1]
+                    storage_info[partition.device] = {
+                        "Mountpoint": partition.mountpoint,
+                        "File System": partition.fstype,
+                        "Usage": usage,
+                        "IO Statistics": io.get(disk_name, "N/A")
+                    }
+                except PermissionError:
+                    continue
+            smart_info = self.get_smart_info()
+            storage_info["SMART"] = smart_info
+            return storage_info
+        except Exception as e:
+            logging.error(f"Storage Diagnostics Error: {e}")
+            return {"Error": str(e)}
+
+    def get_smart_info(self):
+        try:
+            drives = Smart.devices()
+            smart_data = {}
+            for drive in drives:
+                smart_data[drive.name] = {
+                    "Model": drive.model,
+                    "Serial": drive.serial,
+                    "Health": drive.assessment,
+                    "Temperature": getattr(drive, 'temperature', 'N/A'),
+                    "Reallocated Sectors": getattr(drive, 'reallocated_sector_count', 'N/A')
+                }
+            return smart_data
+        except Exception as e:
+            logging.error(f"SMART Data Retrieval Error: {e}")
+            return f"Error retrieving SMART data: {e}"
+
+class GPUDiagnostics:
+    def get_gpu_info(self):
+        try:
+            gpus = GPUtil.getGPUs()
+            gpu_info = {}
+            for gpu in gpus:
+                gpu_info[gpu.id] = {
+                    "Name": gpu.name,
+                    "Load (%)": round(gpu.load * 100, 2),
+                    "Free Memory (MB)": gpu.memoryFree,
+                    "Used Memory (MB)": gpu.memoryUsed,
+                    "Total Memory (MB)": gpu.memoryTotal,
+                    "Temperature (°C)": gpu.temperature,
+                    "UUID": gpu.uuid,
+                    "Clock Speed (MHz)": gpu.clock,
+                    "Fan Speed (%)": gpu.fan,
+                }
+            return gpu_info
+        except Exception as e:
+            logging.error(f"GPU Diagnostics Error: {e}")
+            return {"Error": str(e)}
+
+class BatteryDiagnostics:
+    def get_battery_info(self):
+        try:
+            battery = psutil.sensors_battery()
+            if battery:
+                return {
+                    "Battery Percent": battery.percent,
+                    "Power Plugged In": battery.power_plugged,
+                    "Battery Time Remaining (seconds)": battery.secsleft,
+                    "Battery Health (%)": self.get_battery_health(),
+                    "Charge Cycles": self.get_charge_cycles()
+                }
+            else:
+                return {"Battery": "Not Available"}
+        except Exception as e:
+            logging.error(f"Battery Diagnostics Error: {e}")
+            return {"Error": str(e)}
+
+    def get_battery_health(self):
+        # Implement actual battery health retrieval based on hardware APIs or external tools
+        # Placeholder implementation
+        return random.randint(70, 100)
+
+    def get_charge_cycles(self):
+        # Implement actual charge cycle retrieval based on hardware APIs or external tools
+        # Placeholder implementation
+        return random.randint(100, 500)
+
+class PowerSupplyDiagnostics:
+    def get_power_supply_info(self):
+        try:
+            # Placeholder for actual implementation
+            # Requires interfacing with hardware via serial or other protocols
+            voltage, stability = self.read_power_supply_voltage()
+            return {
+                "Power Supply Voltage (V)": voltage,
+                "Voltage Stability (V)": stability
+            }
+        except Exception as e:
+            logging.error(f"Power Supply Diagnostics Error: {e}")
+            return {"Error": str(e)}
+
+    def read_power_supply_voltage(self):
+        # Simulated voltage reading; replace with actual hardware communication
+        # Example using pyserial to communicate with a multimeter or power supply unit
+        try:
+            ser = serial.Serial('COM3', 9600, timeout=1)  # Update COM port as needed
+            ser.write(b'READ_VOLTS\n')  # Command depends on your device's protocol
+            response = ser.readline().decode('utf-8').strip()
+            ser.close()
+            voltage = float(response)
+            stability = self.assess_voltage_stability(voltage)
+            return voltage, stability
+        except Exception as e:
+            logging.error(f"Power Supply Reading Error: {e}")
+            return "N/A", "N/A"
+
+    def assess_voltage_stability(self, voltage):
+        # Placeholder for actual voltage stability assessment
+        if 11.5 <= voltage <= 12.5:
+            return "Stable"
+        elif 10.0 <= voltage < 11.5 or 12.5 < voltage <= 13.5:
+            return "Marginal"
+        else:
+            return "Unstable"
+
+# runner.py
+
+from diagnostics import (
+    CPUDiagnostics,
+    RAMDiagnostics,
+    StorageDiagnostics,
+    GPUDiagnostics,
+    BatteryDiagnostics,
+    PowerSupplyDiagnostics
+)
+import json
+from datetime import datetime
+import logging
+
+# Configure logging
+logging.basicConfig(filename='diagnostic_logs.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+def run_all_diagnostics():
+    diagnostics = {}
+    cpu = CPUDiagnostics()
+    ram = RAMDiagnostics()
+    storage = StorageDiagnostics()
+    gpu = GPUDiagnostics()
+    battery = BatteryDiagnostics()
+    power = PowerSupplyDiagnostics()
+
+    diagnostics["CPU"] = cpu.get_cpu_info()
+    diagnostics["Memory"] = ram.get_memory_info()
+    diagnostics["Storage"] = storage.get_storage_info()
+    diagnostics["GPU"] = gpu.get_gpu_info()
+    diagnostics["Battery"] = battery.get_battery_info()
+    diagnostics["Power Supply"] = power.get_power_supply_info()
+
+    return diagnostics
+
+def generate_report(diagnostics, prediction):
+    report = {
+        "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "Diagnostics": diagnostics,
+        "AI Prediction": prediction
+    }
+    return report
+
+def save_report(report, filename="diagnostic_report.json"):
+    try:
+        with open(filename, "w") as file:
+            json.dump(report, file, indent=4)
+        logging.info(f"Report saved to {filename}")
+    except Exception as e:
+        logging.error(f"Error saving report: {e}")
+
+def log_diagnostics(report):
+    try:
+        logging.info(json.dumps(report))
+    except Exception as e:
+        logging.error(f"Error logging diagnostics: {e}")
+
+def notify_technician(report, technician_email="technician@example.com"):
+    try:
+        import smtplib
+        from email.mime.text import MIMEText
+
+        subject = f"Diagnostic Report - {report['Timestamp']}"
+        body = json.dumps(report, indent=4)
+
+        msg = MIMEText(body)
+        msg['Subject'] = subject
+        msg['From'] = "your_email@example.com"  # Replace with your email
+        msg['To'] = technician_email
+
+        with smtplib.SMTP_SSL('smtp.example.com', 465) as server:  # Replace with your SMTP server
+            server.login("your_email@example.com", "your_password")  # Replace with your credentials
+            server.sendmail("your_email@example.com", technician_email, msg.as_string())
+        logging.info(f"Notification sent to {technician_email}")
+    except Exception as e:
+        logging.error(f"Error sending notification: {e}")
+
+if __name__ == "__main__":
+    diagnostics = run_all_diagnostics()
+    # AI Prediction will be integrated in the next section
+    print("Diagnostics Completed:")
+    print(json.dumps(diagnostics, indent=4))
+    # Placeholder for AI prediction
+    prediction = {"Prediction": "Healthy", "Confidence": 95.0}
+    report = generate_report(diagnostics, prediction)
+    print("Report:")
+    print(json.dumps(report, indent=4))
+    save_report(report)
+    log_diagnostics(report)
+    notify_technician(report)
+
+# ai_module.py
+
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+import joblib
+import logging
+
+# Configure logging
+logging.basicConfig(filename='ai_module.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+def load_data(file_path):
+    try:
+        data = pd.read_csv(file_path)
+        logging.info("Data loaded successfully.")
+        return data
+    except Exception as e:
+        logging.error(f"Error loading data: {e}")
+        return None
+
+def preprocess_data(data):
+    try:
+        # Handle missing values
+        data = data.dropna()
+
+        # Feature Engineering: Example - Creating average CPU usage
+        data['Average_CPU_Usage'] = data['cpu_usage'].apply(lambda x: np.mean(eval(x)) if isinstance(x, str) else 0)
+
+        # Select features and target
+        X = data[['Average_CPU_Usage', 'memory_usage', 'disk_health', 'gpu_temp', 'battery_health']]
+        y = data['failure']  # 1 = Faulty, 0 = Healthy
+
+        # Normalize numerical features
+        from sklearn.preprocessing import StandardScaler
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+
+        # Save the scaler for future use
+        joblib.dump(scaler, 'scaler.pkl')
+
+        logging.info("Data preprocessed successfully.")
+        return X_scaled, y
+    except Exception as e:
+        logging.error(f"Error preprocessing data: {e}")
+        return None, None
+
+def train_model(X, y):
+    try:
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+        model = RandomForestClassifier(n_estimators=100, random_state=42)
+        model.fit(X_train, y_train)
+
+        y_pred = model.predict(X_test)
+        print(confusion_matrix(y_test, y_pred))
+        print(classification_report(y_test, y_pred))
+
+        # Save the trained model
+        joblib.dump(model, 'failure_predictor.pkl')
+        logging.info("Model trained and saved successfully.")
+    except Exception as e:
+        logging.error(f"Error training model: {e}")
+
+def load_model():
+    try:
+        model = joblib.load('failure_predictor.pkl')
+        scaler = joblib.load('scaler.pkl')
+        logging.info("Model and scaler loaded successfully.")
+        return model, scaler
+    except Exception as e:
+        logging.error(f"Error loading model/scaler: {e}")
+        return None, None
+
+def predict_failure(cpu_usage, memory_usage, disk_health, gpu_temp, battery_health):
+    try:
+        model, scaler = load_model()
+        if model and scaler:
+            input_data = np.array([[cpu_usage, memory_usage, disk_health, gpu_temp, battery_health]])
+            input_scaled = scaler.transform(input_data)
+            prediction = model.predict(input_scaled)
+            probability = model.predict_proba(input_scaled)
+            result = {
+                "Prediction": "Failure Detected" if prediction[0] == 1 else "Healthy",
+                "Confidence": round(max(probability[0]) * 100, 2)
+            }
+            logging.info(f"Prediction made: {result}")
+            return result
+        else:
+            logging.error("Model or scaler not loaded.")
+            return {"Prediction": "Error", "Confidence": 0}
+    except Exception as e:
+        logging.error(f"Error during prediction: {e}")
+        return {"Prediction": "Error", "Confidence": 0}
+
+if __name__ == "__main__":
+    data = load_data('diagnostic_data.csv')
+    if data is not None:
+        X, y = preprocess_data(data)
+        if X is not None and y is not None:
+            train_model(X, y)
+
+# explain_model.py
+
+import joblib
+import shap
+import pandas as pd
+
+def explain_model():
+    try:
+        model = joblib.load('failure_predictor.pkl')
+        scaler = joblib.load('scaler.pkl')
+        # Load a sample of the data
+        data = pd.read_csv('diagnostic_data.csv').dropna()
+        X = data[['Average_CPU_Usage', 'memory_usage', 'disk_health', 'gpu_temp', 'battery_health']]
+        X_scaled = scaler.transform(X)
+
+        explainer = shap.TreeExplainer(model)
+        shap_values = explainer.shap_values(X_scaled)
+
+        # Plot summary
+        shap.summary_plot(shap_values, X, plot_type="bar")
+    except Exception as e:
+        print(f"Error explaining model: {e}")
+
+if __name__ == "__main__":
+    explain_model()
+
+# workflow.py
+
+from runner import run_all_diagnostics, generate_report, save_report, log_diagnostics, notify_technician
+from ai_module import predict_failure
+import logging
+
+# Configure logging
+logging.basicConfig(filename='workflow.log', level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+def execute_workflow():
+    try:
+        # Step 1: Run Diagnostics
+        diagnostics = run_all_diagnostics()
+        logging.info("Diagnostics run successfully.")
+
+        # Step 2: AI Prediction
+        prediction_input = [
+            diagnostics['CPU']['CPU Usage (%)'],
+            diagnostics['Memory']['Memory Usage (%)'],
+            diagnostics['Storage']['SMART']['sda']['Reallocated Sectors'] if 'sda' in diagnostics['Storage']['SMART'] else 0,
+            diagnostics['GPU']['0']['Temperature (°C)'] if '0' in diagnostics['GPU'] else 0,
+            diagnostics['Battery']['Battery Health (%)'] if 'Battery Health (%)' in diagnostics['Battery'] else 100
+        ]
+        prediction = predict_failure(*prediction_input)
+        logging.info(f"AI Prediction: {prediction}")
+
+        # Step 3: Generate Report
+        report = generate_report(diagnostics, prediction)
+        logging.info("Report generated successfully.")
+
+        # Step 4: Save and Log Report
+        save_report(report)
+        log_diagnostics(report)
+        logging.info("Report saved and logged successfully.")
+
+        # Step 5: Notify Technician
+        notify_technician(report)
+        logging.info("Technician notified successfully.")
+
+        return report
+    except Exception as e:
+        logging.error(f"Workflow Execution Error: {e}")
+        return {"Error": str(e)}
+
+if __name__ == "__main__":
+    report = execute_workflow()
+    print("Workflow Execution Completed:")
+    print(report)
+
+pip install PyQt5
+
+# gui.py
+
+import sys
+from PyQt5.QtWidgets import (
+    QApplication, QWidget, QVBoxLayout, QPushButton, QTextEdit, QLabel, QMessageBox
+)
+import json
+from workflow import execute_workflow
+
+class DiagnosticApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle('Electronics Diagnostic Tool')
+        self.setGeometry(100, 100, 800, 600)
+
+        layout = QVBoxLayout()
+
+        self.status_label = QLabel('Status: Ready')
+        layout.addWidget(self.status_label)
+
+        self.run_button = QPushButton('Run Diagnostics')
+        self.run_button.clicked.connect(self.run_diagnostics)
+        layout.addWidget(self.run_button)
+
+        self.report_area = QTextEdit()
+        self.report_area.setReadOnly(True)
+        layout.addWidget(self.report_area)
+
+        self.setLayout(layout)
+
+    def run_diagnostics(self):
+        reply = QMessageBox.question(
+            self, 'Confirm', 'Are you sure you want to run diagnostics?',
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+
+        if reply == QMessageBox.Yes:
+            self.status_label.setText('Status: Running Diagnostics...')
+            QApplication.processEvents()  # Update UI
+            report = execute_workflow()
+            if "Error" not in report:
+                self.report_area.setText(json.dumps(report, indent=4))
+                self.status_label.setText('Status: Diagnostics Completed')
+                QMessageBox.information(self, 'Success', 'Diagnostics completed successfully.')
+            else:
+                self.report_area.setText(json.dumps(report, indent=4))
+                self.status_label.setText('Status: Diagnostics Failed')
+                QMessageBox.critical(self, 'Error', 'Diagnostics failed. Check logs for details.')
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    ex = DiagnosticApp()
+    ex.show()
+    sys.exit(app.exec_())
+
+pip install dash dash-bootstrap-components
+
+# web_interface.py
+
+import dash
+from dash import html, dcc
+import dash_bootstrap_components as dbc
+from dash.dependencies import Input, Output, State
+import json
+from workflow import execute_workflow
+
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+
+app.layout = dbc.Container([
+    dbc.Row([
+        dbc.Col(html.H1("Electronics Diagnostic Dashboard"), className="mb-4")
+    ]),
+    dbc.Row([
+        dbc.Col(dbc.Button("Run Diagnostics", id="run-button", color="primary"), width=12)
+    ], className="mb-4"),
+    dbc.Row([
+        dbc.Col(dcc.Loading(id="loading", children=[html.Div(id="report-output")], type="default"), width=12)
+    ]),
+    dbc.Row([
+        dbc.Col(dcc.Graph(id='cpu-usage'), width=6),
+        dbc.Col(dcc.Graph(id='memory-usage'), width=6)
+    ]),
+    dbc.Row([
+        dbc.Col(dcc.Graph(id='disk-usage'), width=6),
+        dbc.Col(dcc.Graph(id='gpu-temp'), width=6)
+    ]),
+    dbc.Row([
+        dbc.Col(dcc.Graph(id='battery-health'), width=6),
+        dbc.Col(dcc.Graph(id='power-supply'), width=6)
+    ])
+], fluid=True)
+
+@app.callback(
+    Output("report-output", "children"),
+    [
+        Input("run-button", "n_clicks")
+    ]
+)
+def run_diagnostics(n_clicks):
+    if n_clicks:
+        report = execute_workflow()
+        if "Error" not in report:
+            return html.Pre(json.dumps(report, indent=4))
+        else:
+            return html.Pre(json.dumps(report, indent=4))
+    return ""
+
+@app.callback(
+    [
+        Output('cpu-usage', 'figure'),
+        Output('memory-usage', 'figure'),
+        Output('disk-usage', 'figure'),
+        Output('gpu-temp', 'figure'),
+        Output('battery-health', 'figure'),
+        Output('power-supply', 'figure')
+    ],
+    [Input("run-button", "n_clicks")]
+)
+def update_graphs(n_clicks):
+    if n_clicks:
+        report = execute_workflow()
+        if "Error" not in report:
+            cpu = report['Diagnostics']['CPU']['CPU Usage (%)']
+            memory = report['Diagnostics']['Memory']['Memory Usage (%)']
+            disk = report['Diagnostics']['Storage']['IO Statistics']['sda']['read_count'] if 'sda' in report['Diagnostics']['Storage']['IO Statistics'] else 0
+            gpu_temp = report['Diagnostics']['GPU']['0']['Temperature (°C)'] if '0' in report['Diagnostics']['GPU'] else 0
+            battery = report['Diagnostics']['Battery']['Battery Health (%)'] if 'Battery Health (%)' in report['Diagnostics']['Battery'] else 100
+            power = report['Diagnostics']['Power Supply']['Power Supply Voltage (V)'] if 'Power Supply Voltage (V)' in report['Diagnostics']['Power Supply'] else 0
+
+            # Create figures
+            cpu_fig = {
+                'data': [{'x': list(range(len(cpu))), 'y': cpu, 'type': 'line', 'name': 'CPU Usage'}],
+                'layout': {'title': 'CPU Usage (%)'}
+            }
+            memory_fig = {
+                'data': [{'x': list(range(len(memory))), 'y': memory, 'type': 'line', 'name': 'Memory Usage'}],
+                'layout': {'title': 'Memory Usage (%)'}
+            }
+            disk_fig = {
+                'data': [{'x': ['Read Count'], 'y': [disk], 'type': 'bar', 'name': 'Disk Read Count'}],
+                'layout': {'title': 'Disk Read Count'}
+            }
+            gpu_fig = {
+                'data': [{'x': ['GPU Temperature'], 'y': [gpu_temp], 'type': 'bar', 'name': 'GPU Temp'}],
+                'layout': {'title': 'GPU Temperature (°C)'}
+            }
+            battery_fig = {
+                'data': [{'labels': ['Healthy', 'Needs Replacement'], 'values': [battery, 100 - battery], 'type': 'pie'}],
+                'layout': {'title': 'Battery Health (%)'}
+            }
+            power_fig = {
+                'data': [{'x': ['Voltage'], 'y': [power], 'type': 'bar', 'name': 'Power Supply Voltage'}],
+                'layout': {'title': 'Power Supply Voltage (V)'}
+            }
+
+            return cpu_fig, memory_fig, disk_fig, gpu_fig, battery_fig, power_fig
+    return {}, {}, {}, {}, {}, {}
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
+

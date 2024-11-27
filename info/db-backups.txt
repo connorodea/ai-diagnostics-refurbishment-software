@@ -1,0 +1,1 @@
+pg_dump -U postgres -d diagnostic_db > diagnostic_db_backup.sql

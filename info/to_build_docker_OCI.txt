@@ -1,0 +1,2 @@
+docker build -t diagnostic_tool .
+docker run -d -p 8050:8050 diagnostic_tool
