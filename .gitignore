@@ -1,0 +1,61 @@
+# Byte-compiled Python files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+
+# Logs
+*.log
+logs/
+
+# Database backups
+*.sql
+*.dump
+
+# Virtual environment
+venv/
+.env/
+.venv/
+
+# IDE-specific files
+.vscode/
+.idea/
+*.swp
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Python packaging files
+*.egg
+*.egg-info/
+dist/
+build/
+*.wheel
+
+# Docker files and containers
+*.tar
+*.pid
+*.sock
+
+# Test coverage reports
+htmlcov/
+.coverage
+.cache
+.nox/
+
+# Temporary files
+*.bak
+*.tmp
+~$*
+
+# Backup files
+_archive/
+*.bak
+
+# Node.js dependencies (if applicable in web_interface)
+node_modules/
+npm-debug.log
+yarn-error.log
